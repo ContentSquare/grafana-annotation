@@ -36,6 +36,7 @@ func (i *arrayFlags) Set(value string) error {
 
 type FlagsConfig struct {
 	FilePath string
+	Verbose  bool
 	Type     string
 	What     string
 	Data     string
@@ -48,6 +49,7 @@ func (c *FlagsConfig) Setup() {
 	flag.Var(&c.Tags, "tag", "Tags. may be repeated multiple times")
 	flag.StringVar(&c.What, "what", hostname, "The What item to post.")
 	flag.StringVar(&c.Data, "data", "", "Additional data.")
+	flag.BoolVar(&c.Verbose, "verbose", false, "Be Verbose.")
 	flag.Parse()
 }
 
@@ -130,11 +132,12 @@ func NewGraphiteAnnotation(what string, tags arrayFlags, data string) GraphiteAn
 func main() {
 	flagConfig.Setup()
 	config.loadConfig(flagConfig.FilePath)
-
+	if flagConfig.Verbose {
+		log.SetLevel(logo.DEBUG)
+	}
 	if _, err := os.Stat(flagConfig.FilePath); os.IsNotExist(err) {
 		log.Fatalf("Config file not found. %v", flagConfig.FilePath)
 	}
 	annotation := NewGraphiteAnnotation(flagConfig.What, flagConfig.Tags, flagConfig.Data)
 	annotation.post(config.GrafanaUri, config.BearerToken)
-
 }
