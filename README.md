@@ -25,4 +25,28 @@ bearerToken: BearerTokenFromGrafana
 go build
 ```
 
+# Call
 
+## Options
+
+```
+Usage of grafana-annotation:
+  -config-file string
+    	Configuration File (default "~/.grafana-anotation-poster.yml")
+  -data string
+    	Additional data.
+  -tag value
+    	Tags. may be repeated multiple times
+  -verbose
+    	Be Verbose.
+  -what string
+    	The What item to post. (default "$(hostname)")
+```
+
+## Example call
+
+```
+~$ grafana-annotation -data "Details on this event" -tag foo \
+  -tag bar -what "Something happened on system foo with bar event"
+```
+   
