@@ -10,6 +10,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/user"
+	"path/filepath"
 	"time"
 )
 
@@ -45,7 +47,9 @@ type FlagsConfig struct {
 
 func (c *FlagsConfig) Setup() {
 	hostname, _ := os.Hostname()
-	flag.StringVar(&c.FilePath, "config-file", "~/.grafana-anotation-poster.yml", "Configuration File")
+	usr, _ := user.Current()
+	dir := usr.HomeDir
+	flag.StringVar(&c.FilePath, "config-file", filepath.Join(dir, ".grafana-anotation-poster.yml"), "Configuration File")
 	flag.Var(&c.Tags, "tag", "Tags. may be repeated multiple times")
 	flag.StringVar(&c.What, "what", hostname, "The What item to post.")
 	flag.StringVar(&c.Data, "data", "", "Additional data.")
@@ -106,19 +110,20 @@ func (a *GraphiteAnnotation) post(url string, token string) {
 	}
 	defer resp.Body.Close()
 
-	log.Info("response Status:", resp.Status)
-	log.Info("response Headers:", resp.Header)
+	log.Debugf("response Status: %v", resp.Status)
+	log.Debugf("response Headers: %v", resp.Header)
 	body, _ := ioutil.ReadAll(resp.Body)
 	var response jsonAnnotationResponse
 	err = json.Unmarshal(body, &response)
+	log.Debugf("response body: %v", response)
 	if err != nil {
 		log.Fatalf("Unable to parse response. response is %v. err=%v", string(body), err.Error())
 	}
 	if response.Id == 0 {
 		// no id in response
-		log.Fatalf("error sending annotation. Message is %v", response.Message)
+		log.Info("Sending annotation. Message is ", response.Message)
 	} else {
-		log.Info("response Body:", string(body))
+		log.Fatalf("response Body:", string(body))
 	}
 }
 
