@@ -1,4 +1,4 @@
-grafana-annotation: Post graphite annotation to grafana
+grafana-annotation: Post graphite annotation to grafana 5+.
 
 # Install
 
