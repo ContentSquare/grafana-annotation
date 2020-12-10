@@ -1,0 +1,9 @@
+
+# .goreleaser.yml
+builds:
+    - binary: grafana-annotation
+      goos:
+        - linux
+        - darwin
+      goarch:
+        - amd64
