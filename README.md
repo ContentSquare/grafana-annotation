@@ -1,8 +1,14 @@
-grafana-annotation: Post graphite annotation to grafana 5+.
+grafana-annotation: Post annotation to Elastic Search
 
 # Install
 
 go get -d "github.com/contentsquare/grafana-annotation"
+
+# Build
+
+```shell
+make build
+```
 
 # Configure
 
@@ -11,42 +17,24 @@ Will work with a configuration file (default to `~/.grafana-anotation-poster.yml
 ## Configuration file
 
 ```yaml
-grafanaUri: https://some-grafana-host.tld
-bearerToken: BearerTokenFromGrafana
+region: eu-west-1
+env: dev
+provider: aws
+role: testproject
+elasticsearch:
+  bootstrap_servers:
+    - http://localhost:9200
+  index_name: "test_index.2006.02"
 ```
 
-## Create a Bearer Token
 
-[Read the Docs](http://docs.grafana.org/http_api/auth/)
+## Example usage
 
-# Build
 
-```
-go build
-```
-
-# Call
-
-## Options
-
-```
-Usage of grafana-annotation:
-  -config-file string
-    	Configuration File (default "~/.grafana-anotation-poster.yml")
-  -data string
-    	Additional data.
-  -tag value
-    	Tags. may be repeated multiple times
-  -verbose
-    	Be Verbose.
-  -what string
-    	The What item to post. (default "$(hostname)")
+```shell script
+~# grafana-annotation --config-file resources/config-test.yml post --tags systemd --tags stop --tags kafka service kafka is stopped
+Using config file: resources/config-test.yml
+[2020-12-10 13:27:29]  INFO Annotation successfully posted to elasticsearch. tags=[systemd stop kafka eu-west-1 testproject dev aws Vianneys-MacBook-Pro.local]
+~#
 ```
 
-## Example call
-
-```
-~$ grafana-annotation -data "Details on this event" -tag foo \
-  -tag bar -what "Something happened on system foo with bar event"
-```
-   
